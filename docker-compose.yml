@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  frontend1:
+    build: ./frontend1
+    environment:
+      REACT_APP_BACKEND1_URL: 'http://backend1:5000/api/frontend1'
+      REACT_APP_BACKEND2_URL: 'http://backend2:5000/api/frontend2'
+    ports:
+      - "3001:3000"
+
+  frontend2:
+    build: ./frontend2
+    environment:
+      REACT_APP_BACKEND1_URL: 'http://backend1:5000/api/frontend1'
+      REACT_APP_BACKEND2_URL: 'http://backend2:5000/api/frontend2'
+    ports:
+      - "3002:3000"
+
+  backend1:
+    build: ./backend1
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      DB_HOST: db
+    depends_on:
+      - db
+    ports:
+      - "5001:5000"
+
+  backend2:
+    build: ./backend2
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      DB_HOST: db
+    depends_on:
+      - db
+    ports:
+      - "5002:5000"
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
